@@ -48,43 +48,33 @@ func RunPipeline(cmds ...cmd) {
 // in - string, out - User
 func SelectUsers(in, out chan any) {
 	ch := make(chan User, 100)
-	defer close(ch)
 
 	var wg sync.WaitGroup
-	userIds := make(map[uint64]any)
+	userIds := make(map[uint64]struct{})
 
 	for userEmail := range in {
 		wg.Add(1)
 		go func(userEmail any) {
 			defer wg.Done()
 			strEmail, ok := userEmail.(string)
-			if ok {
-				ch <- GetUser(strEmail)
-			}
-		}(userEmail)
-	}
-
-	done := make(chan struct{})
-	go func() {
-		wg.Wait()
-		close(done)
-	}()
-
-	for {
-		select {
-		case user, ok := <-ch:
 			if !ok {
 				return
 			}
-			if _, exist := userIds[user.ID]; !exist {
-				userIds[user.ID] = struct{}{}
-				out <- user
-			}
-		case <-done:
-			return
-		}
+			ch <- GetUser(strEmail)
+		}(userEmail)
 	}
 
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
+
+	for user := range ch {
+		if _, exist := userIds[user.ID]; !exist {
+			userIds[user.ID] = struct{}{}
+			out <- user
+		}
+	}
 }
 
 // in - User, out - MsgID
