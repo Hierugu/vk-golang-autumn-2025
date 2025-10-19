@@ -26,7 +26,7 @@ func RunPipeline(cmds ...cmd) {
 	var wg sync.WaitGroup
 	var channels = make([]chan any, len(cmds)+1)
 
-	for i := range len(channels) {
+	for i := range channels {
 		channels[i] = make(chan any, 100)
 	}
 	close(channels[0])
@@ -129,43 +129,25 @@ func SelectMessages(in, out chan any) {
 
 // in - MsgID out - MsgData
 func CheckSpam(in, out chan any) {
-	ch := make(chan struct{}, HasSpamMaxAsyncRequests)
+	sem := make(chan struct{}, HasSpamMaxAsyncRequests)
 	var wg sync.WaitGroup
-	activeRequests := 0
-	inClosed := false
 
-	for !inClosed {
-		select {
-		case <-ch:
-			activeRequests--
-		case msgAny, ok := <-in:
-			if !ok {
-				inClosed = true
-				break
-			}
-
-			msg, msgOk := msgAny.(MsgID)
-			if !msgOk {
-				continue
-			}
-
-			for activeRequests >= HasSpamMaxAsyncRequests {
-				<-ch
-				activeRequests--
-			}
-			activeRequests++
-			wg.Add(1)
-			go func(msg MsgID) {
-				defer wg.Done()
-				isSpam, err := HasSpam(msg)
-				ch <- struct{}{}
-				if err != nil {
-					fmt.Println("ERROR: ", err)
-					return
-				}
-				out <- MsgData{msg, isSpam}
-			}(msg)
+	for v := range in {
+		msg, ok := v.(MsgID)
+		if !ok {
+			continue
 		}
+		sem <- struct{}{}
+		wg.Add(1)
+		go func(m MsgID) {
+			defer wg.Done()
+			defer func() { <-sem }()
+			isSpam, err := HasSpam(m)
+			if err != nil {
+				return
+			}
+			out <- MsgData{ID: m, HasSpam: isSpam}
+		}(msg)
 	}
 	wg.Wait()
 }
