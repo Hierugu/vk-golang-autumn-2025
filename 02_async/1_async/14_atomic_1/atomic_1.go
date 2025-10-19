@@ -10,8 +10,8 @@ var totalOperations int32 = 0
 var mu = &sync.Mutex{}
 
 func inc() {
-	mu.Lock()
-	defer mu.Unlock()
+	// mu.Lock()
+	// defer mu.Unlock()
 
 	// не атомарная операция
 	totalOperations++
@@ -24,7 +24,7 @@ func main() {
 	}
 	time.Sleep(100 * time.Millisecond)
 	// ождается 1000
-	mu.Lock()
+	// mu.Lock()
 	fmt.Println("total operation = ", totalOperations)
-	mu.Unlock()
+	// mu.Unlock()
 }
