@@ -27,31 +27,46 @@ func parseQuery(r *http.Request) (SearchRequest, error) {
 	// OrderField
 	sr.OrderField = query.Get("order_field")
 	if !slices.Contains(allowedOrderFields, sr.OrderField) {
-		return SearchRequest{}, fmt.Errorf("Invalid order_field")
+		return SearchRequest{}, fmt.Errorf(ErrorBadOrderField)
 	}
 
 	// OrderBy
-	if sr.OrderBy, err = strconv.Atoi(query.Get("order_by")); err != nil {
-		return SearchRequest{}, fmt.Errorf("Invalid order_by: %v", err)
-	}
-	if !slices.Contains(allowedOrderByFields, sr.OrderBy) {
-		return SearchRequest{}, fmt.Errorf("Invalid order_by: must be one of -1, 0, 1")
+	// order_by is optional; default is OrderByAsIs (0)
+	if s := query.Get("order_by"); s != "" {
+		if sr.OrderBy, err = strconv.Atoi(s); err != nil {
+			return SearchRequest{}, fmt.Errorf("Invalid order_by: %v", err)
+		}
+		if !slices.Contains(allowedOrderByFields, sr.OrderBy) {
+			return SearchRequest{}, fmt.Errorf("Invalid order_by: must be one of -1, 0, 1")
+		}
+	} else {
+		sr.OrderBy = OrderByAsIs
 	}
 
 	// Offset
-	if sr.Offset, err = strconv.Atoi(query.Get("offset")); err != nil {
-		return SearchRequest{}, fmt.Errorf("Invalid offset: %v", err)
-	}
-	if sr.Offset < 0 {
-		return SearchRequest{}, fmt.Errorf("offset cannot be negative")
+	// offset is optional; default 0
+	if s := query.Get("offset"); s != "" {
+		if sr.Offset, err = strconv.Atoi(s); err != nil {
+			return SearchRequest{}, fmt.Errorf("Invalid offset: %v", err)
+		}
+		if sr.Offset < 0 {
+			return SearchRequest{}, fmt.Errorf("offset cannot be negative")
+		}
+	} else {
+		sr.Offset = 0
 	}
 
 	// Limit
-	if sr.Limit, err = strconv.Atoi(query.Get("limit")); err != nil {
-		return SearchRequest{}, fmt.Errorf("Invalid limit: %v", err)
-	}
-	if sr.Limit < 0 {
-		return SearchRequest{}, fmt.Errorf("limit cannot be negative")
+	// limit is optional; default 0 means no limit (server will clamp to maxLimit)
+	if s := query.Get("limit"); s != "" {
+		if sr.Limit, err = strconv.Atoi(s); err != nil {
+			return SearchRequest{}, fmt.Errorf("Invalid limit: %v", err)
+		}
+		if sr.Limit < 0 {
+			return SearchRequest{}, fmt.Errorf("limit cannot be negative")
+		}
+	} else {
+		sr.Limit = 0
 	}
 	return sr, nil
 }
