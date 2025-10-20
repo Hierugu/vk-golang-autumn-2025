@@ -15,7 +15,6 @@ func checkMethod(r *http.Request) bool {
 	return r.Method == http.MethodGet
 }
 
-// parseQuery parses and validates query parameters from request r
 func parseQuery(r *http.Request) (SearchRequest, error) {
 	sr := SearchRequest{}
 	query := r.URL.Query()
@@ -31,7 +30,6 @@ func parseQuery(r *http.Request) (SearchRequest, error) {
 	}
 
 	// OrderBy
-	// order_by is optional; default is OrderByAsIs (0)
 	if s := query.Get("order_by"); s != "" {
 		if sr.OrderBy, err = strconv.Atoi(s); err != nil {
 			return SearchRequest{}, fmt.Errorf("Invalid order_by: %v", err)
@@ -44,7 +42,6 @@ func parseQuery(r *http.Request) (SearchRequest, error) {
 	}
 
 	// Offset
-	// offset is optional; default 0
 	if s := query.Get("offset"); s != "" {
 		if sr.Offset, err = strconv.Atoi(s); err != nil {
 			return SearchRequest{}, fmt.Errorf("Invalid offset: %v", err)
@@ -57,7 +54,6 @@ func parseQuery(r *http.Request) (SearchRequest, error) {
 	}
 
 	// Limit
-	// limit is optional; default 0 means no limit (server will clamp to maxLimit)
 	if s := query.Get("limit"); s != "" {
 		if sr.Limit, err = strconv.Atoi(s); err != nil {
 			return SearchRequest{}, fmt.Errorf("Invalid limit: %v", err)
@@ -66,7 +62,7 @@ func parseQuery(r *http.Request) (SearchRequest, error) {
 			return SearchRequest{}, fmt.Errorf("limit cannot be negative")
 		}
 	} else {
-		sr.Limit = 0
+		sr.Limit = maxLimit
 	}
 	return sr, nil
 }
