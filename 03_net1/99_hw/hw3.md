@@ -1,5 +1,10 @@
 Домашнее задание №3
 
+Run cover test on windows:
+```bash
+go test -coverprofile=cover;  go tool cover -html=cover -o cover.html
+```
+
 Дедлайн - 2 недели с момента лекции, на которой была выдана домашка.
 
 ---------
