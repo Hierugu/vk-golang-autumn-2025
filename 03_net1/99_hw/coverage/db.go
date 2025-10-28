@@ -15,7 +15,7 @@ type XMLUser struct {
 }
 
 func (u XMLUser) ToUser() User {
-	return User{u.ID, u.FirstName + u.LastName, u.Age, u.About, u.Gender}
+	return User{u.ID, u.FirstName + " " + u.LastName, u.Age, u.About, u.Gender}
 }
 
 type Database interface {
