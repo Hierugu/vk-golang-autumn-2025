@@ -44,7 +44,8 @@ func main() {
 	router.GET("/users/:id", GetUser)
 
 	router.POST("/users/:login", UpdateUser)
-	// router.HandlerFunc(http.MethodPost, "/users/:login", UpdateUserHandler)
+	// Совместимость со стандартным хендлером, но нужно указать метод
+	router.HandlerFunc(http.MethodPost, "/users/:login", UpdateUserHandler)
 
 	fmt.Println("starting server at :8080")
 	log.Fatal(http.ListenAndServe(":8080", router))

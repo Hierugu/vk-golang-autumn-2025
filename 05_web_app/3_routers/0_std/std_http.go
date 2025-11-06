@@ -70,7 +70,7 @@ func main() {
 	// Наличие метода повышает приоритет шаблона
 	r.HandleFunc("GET /users/{id}", GetUser)
 	r.HandleFunc("PUT /users/{login}", UpdateUser)
-	r.HandleFunc("POST /users/{login}", CreateUser)
+	r.HandleFunc("POST /users/{login}", CreateUser) 
 
 	r.HandleFunc("GET /users/{$}", ExactUsers) // Матчит только запросы на "/users/"
 
