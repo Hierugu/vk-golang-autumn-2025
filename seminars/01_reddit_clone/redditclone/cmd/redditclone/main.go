@@ -1,13 +1,31 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"redditclone/internal/redditclone/db"
+	"redditclone/internal/redditclone/handlers"
+	"redditclone/internal/redditclone/repository"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+
+	var userRepo repository.UserRepository = db.CreateMemoryUserRepository()
+	uh := handlers.NewUserHandler(userRepo, os.Getenv("JWT_SECRET"))
+
+	apiMux := http.NewServeMux()
+	apiMux.HandleFunc("/api/register", uh.RegisterApiHandler)
+	apiMux.HandleFunc("/api/login", uh.LoginApiHandler)
+	apiMux.HandleFunc("/api/health", handlers.HealthApiHandler)
+
 	staticHTMLHandler := http.FileServer(http.Dir("web/html"))
 	staticHandler := http.FileServer(http.Dir("web"))
 
@@ -15,13 +33,10 @@ func main() {
 	staticMux.Handle("/", staticHTMLHandler)
 	staticMux.Handle("/static/", http.StripPrefix("/static/", staticHandler))
 
-	apiMux := http.NewServeMux()
-
 	siteMux := http.NewServeMux()
 	siteMux.Handle("/", staticMux)
-	siteMux.Handle("/", apiMux)
+	siteMux.Handle("/api/", apiMux)
 
-	log.Println("Starting server on :8080")
 	server := &http.Server{
 		Addr: ":8080",
 		//Handler:      stripTrailingSlash(mux),
@@ -31,8 +46,9 @@ func main() {
 		IdleTimeout:  120 * time.Second,
 	}
 
-	err := server.ListenAndServe()
+	log.Print("Starting server on :8080")
+	err = server.ListenAndServe()
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
 }
