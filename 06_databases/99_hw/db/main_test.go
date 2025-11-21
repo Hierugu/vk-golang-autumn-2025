@@ -63,13 +63,14 @@ func PrepareTestApis(db *sql.DB) {
 		`INSERT INTO users (user_id, login, password, email, info, updated) VALUES
 (1,	'rvasily',	'love',	'rvasily@example.com',	'none',	NULL);`,
 	}
-
+	fmt.Println("setup open connections:", db.Stats().OpenConnections)
 	for _, q := range qs {
 		_, err := db.Exec(q)
 		if err != nil {
 			panic(err)
 		}
 	}
+	fmt.Println("setup open connections:", db.Stats().OpenConnections)
 }
 
 func CleanupTestApis(db *sql.DB) {
@@ -105,7 +106,7 @@ func TestApis(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
+	fmt.Println("after creating open connections:", db.Stats().OpenConnections)
 	ts := httptest.NewServer(handler)
 
 	cases := []Case{
