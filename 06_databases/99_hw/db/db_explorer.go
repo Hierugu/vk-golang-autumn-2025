@@ -2,9 +2,8 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
-	"hw5/handlers"
-	"hw5/utils"
+	"hw6/handlers"
+	"hw6/utils"
 	"net/http"
 )
 
@@ -65,6 +64,5 @@ func NewDBExplorer(db *sql.DB) (http.Handler, error) {
 	r.HandleFunc("GET    /{table}/", handlers.ListRecordsHandler) // support trailing slash
 	r.HandleFunc("PUT    /{table}", handlers.CreateRecordHandler)
 	r.HandleFunc("PUT    /{table}/", handlers.CreateRecordHandler)
-	fmt.Println("open connections:", db.Stats().OpenConnections)
 	return r, nil
 }

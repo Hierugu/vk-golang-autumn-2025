@@ -3,7 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"hw5/queries"
+	"hw6/queries"
 	"net/http"
 	"strconv"
 )
@@ -23,7 +23,7 @@ func (h *Handler) ListRecordsHandler(w http.ResponseWriter, r *http.Request) {
 	if v, err := strconv.Atoi(r.URL.Query().Get("offset")); err == nil && v >= 0 {
 		offset = v
 	}
-	fmt.Println(table, limit, offset)
+	// debug print removed
 
 	rows, err := h.DB.Query(fmt.Sprintf(queries.ListRecords, table), limit, offset)
 	if err != nil {

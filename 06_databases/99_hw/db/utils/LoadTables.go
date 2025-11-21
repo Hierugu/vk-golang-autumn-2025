@@ -3,8 +3,8 @@ package utils
 import (
 	"database/sql"
 	"fmt"
-	"hw5/queries"
-	"hw5/types"
+	"hw6/queries"
+	"hw6/types"
 )
 
 func LoadTables(db *sql.DB) (map[string][]types.Column, error) {

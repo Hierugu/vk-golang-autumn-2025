@@ -3,7 +3,7 @@ package utils
 import (
 	"database/sql"
 	"fmt"
-	"hw5/queries"
+	"hw6/queries"
 	"sort"
 )
 

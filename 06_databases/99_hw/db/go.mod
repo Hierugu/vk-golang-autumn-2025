@@ -1,4 +1,4 @@
-module hw5
+module hw6
 
 go 1.25.0
 

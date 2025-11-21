@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"database/sql"
-	"hw5/types"
+	"hw6/types"
 )
 
 type Handler struct {

@@ -3,7 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"hw5/utils"
+	"hw6/utils"
 	"io"
 	"net/http"
 	"strings"
@@ -36,7 +36,6 @@ func (h *Handler) CreateRecordHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error": "expected JSON object"}`, http.StatusBadRequest)
 		return
 	}
-	fmt.Println(record)
 	recordValidated, err := utils.Validate(record, h.Tables[table])
 	if err != nil {
 		fmt.Println("validation error:", err)
@@ -89,5 +88,5 @@ func (h *Handler) CreateRecordHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(resp)
 
-	fmt.Println("open connections:", h.DB.Stats().OpenConnections)
+	// debug print removed
 }

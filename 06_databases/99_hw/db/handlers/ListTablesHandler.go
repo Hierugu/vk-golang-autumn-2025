@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"sort"
 )
@@ -21,5 +20,5 @@ func (h *Handler) ListTablesHandler(w http.ResponseWriter, r *http.Request) {
 	respJSON, _ := json.Marshal(resp)
 	w.Write(respJSON)
 
-	fmt.Println("open connections:", h.DB.Stats().OpenConnections)
+	// debug print removed
 }

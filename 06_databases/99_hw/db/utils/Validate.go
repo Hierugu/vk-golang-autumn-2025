@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"hw5/types"
+	"hw6/types"
 	"strconv"
 	"strings"
 )

@@ -194,5 +194,5 @@ func (h *Handler) UpdateRecordHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(resp)
 
-	fmt.Println("open connections:", h.DB.Stats().OpenConnections)
+	// debug print removed
 }
