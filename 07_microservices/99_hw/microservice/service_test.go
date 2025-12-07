@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"reflect"
 	"runtime"
 	"strings"
@@ -221,7 +222,7 @@ func TestLogging(t *testing.T) {
 		defer wg.Done()
 		for i := 0; i < 4; i++ {
 			evt, errTmp := logStream1.Recv()
-			// log.Println("logger 1", evt, errTmp)
+			log.Println("logger 1", evt, errTmp)
 			if errTmp != nil {
 				t.Errorf("unexpected error: %v, awaiting event", errTmp)
 				return
@@ -240,7 +241,7 @@ func TestLogging(t *testing.T) {
 		defer wg.Done()
 		for i := 0; i < 3; i++ {
 			evt, errTmp := logStream2.Recv()
-			// log.Println("logger 2", evt, errTmp)
+			log.Println("logger 2", evt, errTmp)
 			if errTmp != nil {
 				t.Errorf("unexpected error: %v, awaiting event", errTmp)
 				return
@@ -273,7 +274,6 @@ func TestLogging(t *testing.T) {
 		t.Fatal(err)
 	}
 	time.Sleep(2 * time.Millisecond)
-
 	wg.Wait()
 
 	expectedLogData1 := []*Event{
